@@ -30,7 +30,7 @@ const addTodo = async () => {
 		<input type="checkbox" v-model="newTodoCompleted" placeholder="Title"/>
 		<button type="button" class="btn btn-success" @click="addTodo">Add</button>
 	</div>
-		<table class="table" style="width: 500px;">
+		<table class="table table-bordered" style="width: 500px;">
 			<thead>
 				<tr>
 					<th>#</th>
