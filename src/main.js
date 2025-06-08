@@ -8,15 +8,17 @@ import { initializeApp } from "firebase/app"
 import App from './App.vue'
 import router from './router'
 
-export const firebaseApp = initializeApp({
-    apiKey: "AIzaSyAKKynvQwEmDbV7zudKgtiDRHktOuAKG3A",
-    authDomain: "echo-9b874.firebaseapp.com",
-    projectId: "echo-9b874",
-    storageBucket: "echo-9b874.firebasestorage.app",
-    messagingSenderId: "247398897532",
-    appId: "1:247398897532:web:5237445130b032155a36f9",
-    measurementId: "G-5C3Z2CNDQS"
-});
+const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+
+export const firebaseApp = initializeApp(firebaseConfig);
 
 const app = createApp(App)
 
