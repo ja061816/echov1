@@ -10,6 +10,7 @@ const todos = useCollection(collection(db, "todos"));
 const newTodoTitle = ref("")
 const newTodoCompleted = ref(false)
 const newTodoImage = ref("")
+const fileInputRef = ref(null) // Create a ref for the file input
 
 const addTodo = async () => {
 	if (newTodoTitle.value.trim()) {
@@ -21,6 +22,11 @@ const addTodo = async () => {
 		newTodoTitle.value = ""
 		newTodoCompleted.value = false;
 		newTodoImage.value = ""
+		
+		// Reset the file input
+		if (fileInputRef.value) {
+			fileInputRef.value.value = null; // Reset the file input
+		}
 	}
 };
 
@@ -29,9 +35,10 @@ const handleFileChange = (event) => {
 	if (file && file.type.startsWith("image/")) {
 		const reader = new FileReader()
 		reader.onload = (e) => {
-		newTodoImage.value = e.target.result
+			newTodoImage.value = e.target.result
 		};
 		reader.readAsDataURL(file)
+		console.log(newTodoImage,'file')
 	} else {
 		newTodoImage.value = ""
 		alert("Please select a valid image file.")
@@ -45,7 +52,7 @@ const handleFileChange = (event) => {
 			<input
 				type="text"
 				v-model="newTodoTitle"
-				placeholder="Title"
+				placeholder="Project Title"
 				class="form-control"
 				style="width: 300px;"
 			/>
@@ -55,6 +62,7 @@ const handleFileChange = (event) => {
 				class="form-control"
 				style="width: 300px;"
 				accept="image/*"
+				ref="fileInputRef"
 			/>
 			<input
 				type="checkbox"
@@ -64,13 +72,15 @@ const handleFileChange = (event) => {
 				id="checkDefault"
 			/>
 			<label class="form-check-label" for="checkDefault">Completed</label>
-			<button type="button" class="btn btn-success" @click="addTodo">Add</button>
 		</div>
-		<table class="table table-bordered" style="width: 650px; margin-top: 20px;">
+
+		<button type="button" class="mt-2 btn btn-success" @click="addTodo">Add</button>
+
+		<table class="table table-bordered" style="width: 650px; margin-top: 10px;">
 			<thead>
 				<tr>
-				<th>#</th>
-				<th>Title</th>
+				<th>No.</th>
+				<th>Project</th>
 				<th>Completed</th>
 				<th>Image</th>
 				</tr>
