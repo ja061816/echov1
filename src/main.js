@@ -5,9 +5,11 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { VueFire } from "vuefire"
 import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,11 +22,16 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
+export const auth = getAuth(firebaseApp);
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
 app.use(VueFire, { firebaseApp })
+
+// Initialize auth store
+const authStore = useAuthStore()
+authStore.init()
 
 app.mount('#app')

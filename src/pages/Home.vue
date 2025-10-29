@@ -3,6 +3,11 @@ import { getFirestore, collection, addDoc } from "firebase/firestore"
 import { useCollection } from "vuefire"
 import { firebaseApp } from "@/main"
 import { ref } from "vue"
+import { useAuthStore } from "@/stores/auth"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const db = getFirestore(firebaseApp);
 const todos = useCollection(collection(db, "todos"));
@@ -44,10 +49,32 @@ const handleFileChange = (event) => {
 		alert("Please select a valid image file.")
 	}
 };
+
+const logout = async () => {
+	await authStore.logout()
+	router.push('/login')
+};
 </script>
 
 <template>
   <div class="m-2">
+		<!-- Loading state -->
+		<div v-if="authStore.loading" class="d-flex justify-content-center align-items-center" style="height: 200px;">
+			<div class="spinner-border text-primary" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+		
+		<!-- Main content -->
+		<div v-else>
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h2></h2>
+				<div>
+					<span class="me-2">Welcome, {{ authStore.user?.email }}</span>
+					<button type="button" class="btn btn-outline-danger" @click="logout">Logout</button>
+				</div>
+			</div>
+		
 		<div style="display: flex; align-items: center; gap: 10px;">
 			<input
 				type="text"
@@ -82,7 +109,7 @@ const handleFileChange = (event) => {
 				<th>No.</th>
 				<th>Project</th>
 				<th>Completed</th>
-				<th>Image</th>
+				<th style="text-align: center;">Image</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -90,12 +117,13 @@ const handleFileChange = (event) => {
 				<td>{{ i + 1 }}</td>
 				<td>{{ item.title }}</td>
 				<td>{{ item.completed }}</td>
-				<td v-if="item.image">
+				<td v-if="item.image" style="text-align: center;">
 					<img :src="item.image" alt="Todo Image" style="width: 50px; height: auto; object-fit: contain;" />
 				</td>
 				<td v-else>No Image</td>
 				</tr>
 			</tbody>
 		</table>
+		</div>
 	</div>
 </template>

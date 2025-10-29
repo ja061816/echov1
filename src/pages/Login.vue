@@ -1,5 +1,10 @@
 <script setup>
 import { ref } from "vue"
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
+import { auth } from "@/main"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const loginEmail = ref("")
 const loginPassword = ref("")
@@ -7,6 +12,8 @@ const regName = ref("")
 const regEmail = ref("")
 const regPassword = ref("")
 const revealSignUp = ref(false)
+const errorMessage = ref("")
+const isLoading = ref(false)
 
 const resetForm = () => {
 	loginEmail.value = ""
@@ -14,6 +21,51 @@ const resetForm = () => {
 	regName.value = ""
 	regEmail.value = ""
 	regPassword.value = ""
+	errorMessage.value = ""
+}
+
+const login = async () => {
+	if (!loginEmail.value || !loginPassword.value) {
+		errorMessage.value = "Please fill in all fields"
+		return
+	}
+	
+	isLoading.value = true
+	errorMessage.value = ""
+	
+	try {
+		await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value)
+		router.push('/home')
+	} catch (error) {
+		errorMessage.value = error.message
+	} finally {
+		isLoading.value = false
+	}
+}
+
+const register = async () => {
+	if (!regName.value || !regEmail.value || !regPassword.value) {
+		errorMessage.value = "Please fill in all fields"
+		return
+	}
+	
+	if (regPassword.value.length < 6) {
+		errorMessage.value = "Password must be at least 6 characters"
+		return
+	}
+	
+	isLoading.value = true
+	errorMessage.value = ""
+	
+	try {
+		await createUserWithEmailAndPassword(auth, regEmail.value, regPassword.value)
+		router.push('/home')
+	} catch (error) {
+		console.error('Registration error:', error)
+		errorMessage.value = error.message || 'Registration failed. Please try again.'
+	} finally {
+		isLoading.value = false
+	}
 }
 </script>
 
@@ -27,9 +79,14 @@ const resetForm = () => {
 				</div>
 				<div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
 
-					<form v-if="!revealSignUp">
+					<form v-if="!revealSignUp" @submit.prevent="login">
 						<div class="divider d-flex align-items-center my-4">
 							<p class="text-center fw-bold mx-3 mb-0">LOGIN</p>
+						</div>
+
+						<!-- Error message -->
+						<div v-if="errorMessage" class="alert alert-danger" role="alert">
+							{{ errorMessage }}
 						</div>
 
 						<!-- Email input -->
@@ -59,16 +116,23 @@ const resetForm = () => {
 						</div> -->
 
 						<div class="text-center text-lg-start mt-4 pt-2">
-							<button type="button" class="btn btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
+							<button type="submit" class="btn btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;" :disabled="isLoading">
+								{{ isLoading ? 'Logging in...' : 'Login' }}
+							</button>
 							<p class="mt-3 pt-1 mb-0">Don't have an account? 
 								<span class="p-0 mb-2 btn btn-link link-success fw-bold" @click="revealSignUp = true, resetForm()">Register</span>
 							</p>
 						</div>
 					</form>
 
-					<form v-else>
+					<form v-else @submit.prevent="register">
 						<div class="divider d-flex align-items-center my-4">
 							<p class="text-center fw-bold mx-3 mb-0">REGISTER</p>
+						</div>
+
+						<!-- Error message -->
+						<div v-if="errorMessage" class="alert alert-danger" role="alert">
+							{{ errorMessage }}
 						</div>
 
 						<!-- name input -->
@@ -96,7 +160,9 @@ const resetForm = () => {
 						</div>
 
 						<div class="text-center text-lg-start mt-4 pt-2">
-							<button type="button" class="btn btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;">Register</button>
+							<button type="submit" class="btn btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;" :disabled="isLoading">
+								{{ isLoading ? 'Registering...' : 'Register' }}
+							</button>
 							<p class="mt-3 pt-1 mb-0">Already have an account? 
 								<span class="p-0 mb-2 btn btn-link link-success fw-bold" @click="revealSignUp = false, resetForm()">Login</span>
 							</p>
