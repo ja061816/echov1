@@ -2,6 +2,7 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css'
 import { createApp } from 'vue'
+import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 import { VueFire } from "vuefire"
 import { initializeApp } from "firebase/app"
@@ -29,6 +30,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(VueFire, { firebaseApp })
+app.use(vuetify)
 
 // Initialize auth store
 const authStore = useAuthStore()

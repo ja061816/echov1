@@ -1,10 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../pages/Home.vue'
+import Table from '../pages/Table.vue'
 import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/table',
+      name: 'table',
+      component: Table,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/home',
       name: 'home',
@@ -13,7 +20,8 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: { name: 'home' }
+      // redirect: { name: 'home' }
+      redirect: { name: 'table' }
     },
     {
       path: '/login',
