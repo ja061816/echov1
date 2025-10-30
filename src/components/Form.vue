@@ -32,7 +32,29 @@
                 density="compact"
                 class="mb-4"
                 mask="####-##-##"
+                @input="calculateAge"
             ></v-mask-input>
+
+            <v-text-field
+                hint=""
+                persistent-hint
+                label="Age"
+                v-model="age"
+                variant="solo"
+                density="compact"
+                class="mb-4"
+                readonly
+            ></v-text-field>
+
+            <v-select
+                :items="genders"
+                density="compact"
+                v-model="gender"
+                variant="solo"
+                :rules="rules"
+                label="* Gender"
+                class="mb-4"
+            ></v-select>
 
             <v-select
                 :items="ids"
@@ -106,12 +128,15 @@
   const fullname = ref('')
   const brgy = ref('')
   const bday = ref('')
+  const age = ref('')
+  const gender = ref('')
   const selectedID = ref(null)
   const idNum = ref('')
   const contactNum = ref('')
   const contactPerson = ref('')
 
-  const barangays = ['Barangay 1', 'Barangay 2', 'Barangay 3', 'Barangay 4']
+  const genders = ['M','F']
+  const barangays = ['Baliwag', 'Barangay 1', 'Barangay 2', 'Barangay 3', 'Barangay 4', 'Barangay 5', 'Bendita 1','Bendita 2', 'Caluangan', 'Kabulusan', 'Medina', 'Pacheco', 'Ramirez', 'San Agustin', 'Tua', 'Urdaneta' ]
   const ids = [
     {
         'type' : "National ID",
@@ -157,6 +182,8 @@
         const newItem = {
             name: fullname.value,
             brgy: brgy.value,
+            age: age.value,
+            gender: gender.value,
             // bday: bday.value,
             bday: `${bday.value.slice(0, 4)}-${bday.value.slice(4, 6)}-${bday.value.slice(6, 8)}`,
             presentedID: selectedID.value?.type,
@@ -188,6 +215,27 @@
   const resetValidation = () => {
     form.value.reset()
   }
+
+  function calculateAge() {
+    if(bday.value.length == 8){
+        const birthDate = new Date(`${bday.value.slice(0, 4)}-${bday.value.slice(4, 6)}-${bday.value.slice(6, 8)}`);
+        const today = new Date();
+        
+        let computedAge = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        // Check if the birthday has occurred this year or not
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            computedAge--;
+        }
+
+        // return age;
+        age.value = computedAge
+    }
+
+}
+
+
 
 </script>
 

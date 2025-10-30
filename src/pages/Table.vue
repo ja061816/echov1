@@ -57,7 +57,7 @@
             items-per-page="50"
         ></v-data-table>
 
-        <v-fab icon="mdi-plus" app color="primary"></v-fab>
+        <v-fab icon="mdi-file-excel" app color="primary" @click="extract"></v-fab>
     </div>
 </template>
 
@@ -67,6 +67,7 @@ import { getFirestore, collection } from "firebase/firestore"
 import { useCollection } from "vuefire"
 import { firebaseApp } from "@/main"
 import { ref } from 'vue'
+import exportFromJSON from "export-from-json";
 
 const dba = getFirestore(firebaseApp);
 const arr = useCollection(collection(dba, "assistance"));
@@ -77,6 +78,8 @@ const search = ref('')
 const headers = [
   { align: 'start', key: 'name', title: 'Name', },
   { key: 'bday', sortable: false, title: 'Birthday' },
+  { key: 'age', title: 'Age' },
+  { key: 'gender', title: 'Gender' },
   { key: 'brgy', title: 'Barangay' },
   { key: 'presentedID', sortable: false, title: 'ID' },
   { key: 'presentedIDnum', sortable: false, title: 'ID Number' },
@@ -95,13 +98,48 @@ const headers = [
 //     }
 // ]
 
-const handleFabClick = () => {
-    // Add your FAB click handler logic here
-    console.log('FAB clicked')
-}
+const extract = () => {
+    let arrr = arr.value.map((a) => {
+        return {
+            name : a.name,
+            brgy : a.brgy,
+            bday : a.bday,
+            age : a.age,
+            gender : a.gender,
+            presentedID : a.presentedID,
+            presentedIDnum : a.presentedIDnum,
+            contactNum : a.contactNum,
+            contactPerson : a.contactPerson
+        }
+    })
+    arrr.forEach(function (o) {
+        Object.keys(o).forEach(function (k) {
+            if (o[k] === null) {
+                o[k] = '';
+            }
+        });
+    });
 
-const test = (item) => {
-    console.log(item)
+    let filteredData = arrr
+
+    exportFromJSON({
+        data : filteredData, 
+        fileName: "Assistance Data", 
+        exportType : exportFromJSON.types.xls,
+        withBOM : true,
+        fields : 
+        {
+            name : 'Name',
+            brgy : 'Barangay',
+            bday : 'Birthday',
+            age : 'Age',
+            gender : 'Gender',
+            presentedID : 'ID',
+            presentedIDnum : 'ID Number',
+            contactNum : 'Contact Number',
+            contactPerson : 'Contact Person'
+        }
+    })
 }
 
 </script>
