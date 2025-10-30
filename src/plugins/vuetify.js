@@ -2,7 +2,6 @@ import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import { VMaskInput } from 'vuetify/labs/VMaskInput'
-import VueTheMask from 'vue-the-mask'
 
 export const vuetify = createVuetify({
   theme: {
@@ -10,7 +9,6 @@ export const vuetify = createVuetify({
   },
   components: {
     VMaskInput,
-    VueTheMask
   },
 })
 
